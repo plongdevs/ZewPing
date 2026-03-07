@@ -381,43 +381,43 @@
     selectedLinks = parseInt(el.dataset.links);
   }
 
-  async function handleGenerate() {
-    const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
-    if (!token) {
-      showError("Vui lòng xác minh CAPTCHA!");
-      return;
-    }
-
-    const btn = document.getElementById('btnGen');
-    btn.disabled = true;
-    btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span>ĐANG TẠO...';
-    hideError();
-    document.getElementById('resultBox').classList.remove('show');
-
-    try {
-      const hours = selectedLinks === 2 ? 48 : 24;
-      const res  = await fetch(
-        `${WORKER_URL}?links=${selectedLinks}&hours=${hours}&token=${encodeURIComponent(token)}`
-      );
-      const data = await res.json();
-
-      if (!res.ok || !data.url) {
-        throw new Error(data.message || "Lỗi server");
+    async function handleGenerate() {
+      const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
+      if (!token) {
+        showError("Vui lòng xác minh CAPTCHA!");
+        return;
       }
-
-      finalUrl = data.url;
-      document.getElementById('resultUrl').textContent = finalUrl;
-      document.getElementById('resultBox').classList.add('show');
-
-    } catch (e) {
-      showError("❌ " + (e.message || "Không thể tạo key. Thử lại!"));
-    } finally {
-      btn.disabled = false;
-      btn.querySelector('.btn-text').textContent = '[ TẠO KEY ]';
-      // Reset turnstile
-      if (window.turnstile) turnstile.reset();
+    
+      const btn = document.getElementById('btnGen');
+      btn.disabled = true;
+      btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span>ĐANG TẠO...';
+      hideError();
+      document.getElementById('resultBox').classList.remove('show');
+    
+      try {
+    
+        const res = await fetch(
+          `${WORKER_URL}?links=${selectedLinks}&token=${encodeURIComponent(token)}`
+        );
+    
+        const data = await res.json();
+    
+        if (!res.ok || !data.url) {
+          throw new Error(data.message || "Lỗi server");
+        }
+    
+        finalUrl = data.url;
+        document.getElementById('resultUrl').textContent = finalUrl;
+        document.getElementById('resultBox').classList.add('show');
+    
+      } catch (e) {
+        showError("❌ " + (e.message || "Không thể tạo key. Thử lại!"));
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('.btn-text').textContent = '[ TẠO KEY ]';
+        if (window.turnstile) turnstile.reset();
+      }
     }
-  }
 
   function goLink() {
     if (finalUrl) window.open(finalUrl, '_blank');
