@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SuperPing - Key Gen System</title>
+<title>SuperPing - Gen Key System</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
@@ -298,7 +298,7 @@
 
 <div class="card">
   <div class="header">
-    <span class="logo">Super Ping</span>
+    <span class="logo">SuperPing</span>
     <span class="tagline">Key Generation System</span>
   </div>
 
@@ -325,9 +325,9 @@
       <div class="key-sub">Miễn phí</div>
 
     </div>
-    <div class="key-card gold" data-links="2" onclick="selectKey(this)">
-      <div class="key-links">2 links</div>
-      <div class="key-duration">48H</div>
+    <div class="key-card gold" data-links="5" onclick="selectKey(this)">
+      <div class="key-links">5 links</div>
+      <div class="key-duration">1 Tuần</div>
       <div class="key-sub">Miễn phí</div>
 
     </div>
@@ -381,43 +381,43 @@
     selectedLinks = parseInt(el.dataset.links);
   }
 
-    async function handleGenerate() {
-      const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
-      if (!token) {
-        showError("Vui lòng xác minh CAPTCHA!");
-        return;
-      }
-    
-      const btn = document.getElementById('btnGen');
-      btn.disabled = true;
-      btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span>ĐANG TẠO...';
-      hideError();
-      document.getElementById('resultBox').classList.remove('show');
-    
-      try {
-    
-        const res = await fetch(
-          `${WORKER_URL}?links=${selectedLinks}&token=${encodeURIComponent(token)}`
-        );
-    
-        const data = await res.json();
-    
-        if (!res.ok || !data.url) {
-          throw new Error(data.message || "Lỗi server");
-        }
-    
-        finalUrl = data.url;
-        document.getElementById('resultUrl').textContent = finalUrl;
-        document.getElementById('resultBox').classList.add('show');
-    
-      } catch (e) {
-        showError("❌ " + (e.message || "Không thể tạo key. Thử lại!"));
-      } finally {
-        btn.disabled = false;
-        btn.querySelector('.btn-text').textContent = '[ TẠO KEY ]';
-        if (window.turnstile) turnstile.reset();
-      }
+  async function handleGenerate() {
+    const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
+    if (!token) {
+      showError("Vui lòng xác minh CAPTCHA!");
+      return;
     }
+
+    const btn = document.getElementById('btnGen');
+    btn.disabled = true;
+    btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span>ĐANG TẠO...';
+    hideError();
+    document.getElementById('resultBox').classList.remove('show');
+
+    try {
+      // Không gửi hours — worker tự xác định theo links để tránh tamper
+      const res  = await fetch(
+        `${WORKER_URL}?links=${selectedLinks}&token=${encodeURIComponent(token)}`
+      );
+      const data = await res.json();
+
+      if (!res.ok || !data.url) {
+        throw new Error(data.message || "Lỗi server. Thử lại!");
+      }
+
+      finalUrl = data.url;
+      document.getElementById('resultUrl').textContent = finalUrl;
+      document.getElementById('resultBox').classList.add('show');
+
+    } catch (e) {
+      showError("❌ " + (e.message || "Không thể tạo key. Thử lại!"));
+    } finally {
+      btn.disabled = false;
+      btn.querySelector('.btn-text').textContent = '[ TẠO KEY ]';
+      // Reset turnstile
+      if (window.turnstile) turnstile.reset();
+    }
+  }
 
   function goLink() {
     if (finalUrl) window.open(finalUrl, '_blank');
