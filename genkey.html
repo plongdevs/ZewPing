@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -33,7 +34,6 @@
     overflow-x: hidden;
   }
 
-  /* Grid bg */
   body::before {
     content: '';
     position: fixed; inset: 0; z-index: -2;
@@ -43,7 +43,6 @@
     background-size: 40px 40px;
   }
 
-  /* Glow orb */
   body::after {
     content: '';
     position: fixed;
@@ -76,7 +75,6 @@
     opacity: 0.6;
   }
 
-  /* Header */
   .header { text-align: center; margin-bottom: 30px; }
   .logo {
     font-family: 'Share Tech Mono', monospace;
@@ -95,7 +93,6 @@
     font-family: 'Share Tech Mono', monospace;
   }
 
-  /* Section label */
   .sec-label {
     font-size: 0.62rem;
     font-weight: 700;
@@ -106,7 +103,6 @@
     font-family: 'Share Tech Mono', monospace;
   }
 
-  /* App card */
   .app-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 22px; }
   .app-card {
     background: rgba(0,0,0,0.3);
@@ -144,8 +140,7 @@
     content: '✓'; font-size: 0.65rem; color: #000; font-weight: 900;
   }
 
-  /* Key type */
-  .key-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 22px; }
+  .key-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
   .key-card {
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--border);
@@ -185,14 +180,11 @@
     margin-top: 4px;
   }
 
-
-  /* Captcha */
   .captcha-wrap {
     margin-bottom: 22px;
     display: flex; justify-content: center;
   }
 
-  /* Button */
   .btn-gen {
     width: 100%;
     padding: 16px;
@@ -212,11 +204,7 @@
   .btn-gen:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .btn-gen .btn-text { position: relative; z-index: 1; }
 
-  /* Result */
-  .result {
-    margin-top: 20px;
-    display: none;
-  }
+  .result { margin-top: 20px; display: none; }
   .result.show { display: block; animation: fadeUp 0.4s ease; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .result-label {
@@ -260,7 +248,6 @@
   }
   .error-box.show { display: block; animation: fadeUp 0.3s ease; }
 
-  /* Spinner */
   .spinner {
     display: inline-block;
     width: 16px; height: 16px;
@@ -272,14 +259,12 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Divider */
   .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--border), transparent);
     margin: 20px 0;
   }
 
-  /* Scan line effect */
   @keyframes scanline {
     0% { top: -5%; }
     100% { top: 105%; }
@@ -302,7 +287,6 @@
     <span class="tagline">Key Generation System</span>
   </div>
 
-  <!-- App -->
   <div class="sec-label">Chọn ứng dụng</div>
   <div class="app-grid" id="appGrid">
     <div class="app-card selected" data-app="superpingpro" onclick="selectApp(this)">
@@ -316,20 +300,22 @@
 
   <div class="divider"></div>
 
-  <!-- Key type -->
   <div class="sec-label">Chọn loại key</div>
   <div class="key-grid">
     <div class="key-card selected" data-links="1" onclick="selectKey(this)">
       <div class="key-links">1 link</div>
       <div class="key-duration">24H</div>
       <div class="key-sub">Free</div>
-
+    </div>
+    <div class="key-card" data-links="2" onclick="selectKey(this)">
+      <div class="key-links">2 links</div>
+      <div class="key-duration">48H</div>
+      <div class="key-sub">Free</div>
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- Turnstile CAPTCHA -->
   <div class="sec-label">Xác minh</div>
   <div class="captcha-wrap">
     <div class="cf-turnstile"
@@ -339,15 +325,12 @@
     </div>
   </div>
 
-  <!-- Button -->
   <button class="btn-gen" id="btnGen" onclick="handleGenerate()">
     <span class="btn-text">[ TẠO KEY ]</span>
   </button>
 
-  <!-- Error -->
   <div class="error-box" id="errorBox"></div>
 
-  <!-- Result -->
   <div class="result" id="resultBox">
     <div class="result-label">Link của bạn</div>
     <div class="result-box">
@@ -389,7 +372,6 @@
     document.getElementById('resultBox').classList.remove('show');
 
     try {
-      // Không gửi hours — worker tự xác định theo links để tránh tamper
       const res  = await fetch(
         `${WORKER_URL}?links=${selectedLinks}&token=${encodeURIComponent(token)}`
       );
@@ -408,7 +390,6 @@
     } finally {
       btn.disabled = false;
       btn.querySelector('.btn-text').textContent = '[ TẠO KEY ]';
-      // Reset turnstile
       if (window.turnstile) turnstile.reset();
     }
   }
