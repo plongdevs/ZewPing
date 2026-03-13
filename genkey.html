@@ -15,6 +15,7 @@
     --muted:  #94a3b8;
     --red:    #ff2d55;
     --border: rgba(255,255,255,0.08);
+    --gold:   #ffd700;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -142,31 +143,96 @@
     content: '✓'; font-size: 0.65rem; color: #000; font-weight: 900;
   }
 
-  .key-block {
-    border: 1px solid rgba(0,229,255,0.3);
-    border-radius: 14px;
-    padding: 18px 16px;
-    background: rgba(0,229,255,0.06);
-    box-shadow: 0 0 20px rgba(0,229,255,0.08);
+  /* ── Key type selector ── */
+  .key-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
     margin-bottom: 22px;
-    display: flex; align-items: center; justify-content: space-between;
   }
-  .key-duration {
+  .key-option {
+    border-radius: 14px;
+    padding: 16px 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+    border: 1.5px solid var(--border);
+    background: rgba(0,0,0,0.25);
+    user-select: none;
+  }
+  .key-option:hover { border-color: rgba(0,229,255,0.4); }
+  .key-option.active-24 {
+    border-color: var(--accent);
+    background: rgba(0,229,255,0.08);
+    box-shadow: 0 0 18px rgba(0,229,255,0.12);
+  }
+  .key-option.active-48 {
+    border-color: var(--gold);
+    background: rgba(255,215,0,0.07);
+    box-shadow: 0 0 18px rgba(255,215,0,0.12);
+  }
+  .key-option .opt-hours {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 2rem; font-weight: 700;
-    color: var(--accent);
-    text-shadow: 0 0 16px rgba(0,229,255,0.5);
+    font-size: 1.7rem; font-weight: 700;
     line-height: 1;
   }
-  .key-desc { font-size: 0.7rem; color: var(--muted); margin-top: 5px; }
-  .key-pill {
-    padding: 5px 14px; border-radius: 20px;
-    background: rgba(0,229,255,0.1);
-    border: 1px solid rgba(0,229,255,0.25);
-    font-size: 0.62rem; font-weight: 700;
-    color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
+  .key-option.active-24 .opt-hours { color: var(--accent); text-shadow: 0 0 14px rgba(0,229,255,0.5); }
+  .key-option.active-48 .opt-hours { color: var(--gold);  text-shadow: 0 0 14px rgba(255,215,0,0.5); }
+  .key-option:not(.active-24):not(.active-48) .opt-hours { color: var(--muted); }
+  .key-option .opt-meta {
+    font-size: 0.65rem; color: var(--muted);
+    margin-top: 5px; line-height: 1.4;
     font-family: 'Share Tech Mono', monospace;
   }
+  .key-option.active-24 .opt-meta { color: var(--accent); opacity: 0.75; }
+  .key-option.active-48 .opt-meta { color: var(--gold);  opacity: 0.75; }
+  .key-option .opt-pill {
+    display: inline-block; margin-top: 8px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .key-option.active-24 .opt-pill, .key-option:not(.active-48) .opt-pill.pill-free {
+    background: rgba(0,229,255,0.12); border: 1px solid rgba(0,229,255,0.3); color: var(--accent);
+  }
+  .key-option.active-48 .opt-pill {
+    background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.35); color: var(--gold);
+  }
+  .key-option:not(.active-24):not(.active-48) .opt-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); }
+
+  /* ── Step indicator (2 links) ── */
+  .step-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .step-indicator.show { display: flex; }
+  .step-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem; font-weight: 700;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    transition: 0.3s;
+  }
+  .step-dot.done  { background: var(--accent); border-color: var(--accent); color: #000; }
+  .step-dot.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.3); }
+  .step-line {
+    flex: 1; max-width: 40px; height: 1px;
+    background: var(--border); transition: 0.3s;
+  }
+  .step-line.done { background: var(--accent); }
+  .step-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+    text-align: center;
+  }
+  .step-label span { color: var(--gold); }
 
   .divider {
     height: 1px;
@@ -197,6 +263,10 @@
   .btn-gen:active { transform: translateY(0); }
   .btn-gen:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .btn-gen .btn-text { position: relative; z-index: 1; }
+  .btn-gen.gold-btn {
+    background: linear-gradient(135deg, var(--gold) 0%, #ff8c00 100%);
+  }
+  .btn-gen.gold-btn:hover { box-shadow: 0 8px 30px rgba(255,215,0,0.3); }
 
   .result { margin-top: 20px; display: none; }
   .result.show { display: block; animation: fadeUp 0.4s ease; }
@@ -230,6 +300,23 @@
     flex-shrink: 0; transition: 0.2s;
   }
   .btn-go:hover { box-shadow: 0 0 15px rgba(0,229,255,0.5); }
+
+  /* ── Next step button (after opening link 1) ── */
+  .btn-next {
+    width: 100%; margin-top: 12px;
+    padding: 13px;
+    border: 1.5px solid var(--gold);
+    border-radius: 12px;
+    background: rgba(255,215,0,0.06);
+    color: var(--gold);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer; transition: 0.2s;
+    display: none;
+  }
+  .btn-next.show { display: block; animation: fadeUp 0.4s ease; }
+  .btn-next:hover { background: rgba(255,215,0,0.12); box-shadow: 0 0 18px rgba(255,215,0,0.2); }
 
   .error-box {
     margin-top: 16px;
@@ -277,12 +364,29 @@
   <div class="divider"></div>
 
   <div class="sec-label">Loại key</div>
-  <div class="key-block">
-    <div>
-      <div class="key-duration">24H</div>
-      <div class="key-desc">1 link • Miễn phí</div>
+  <div class="key-selector">
+    <div class="key-option active-24" id="opt24" onclick="selectType(12)">
+      <div class="opt-hours">12H</div>
+      <div class="opt-meta">1 link</div>
+      <div class="opt-pill pill-free">Free</div>
     </div>
-    <div class="key-pill">Free</div>
+    <div class="key-option" id="opt48" onclick="selectType(24)">
+      <div class="opt-hours">24H</div>
+      <div class="opt-meta">2 links</div>
+      <div class="opt-pill pill-custom">Custom</div>
+    </div>
+  </div>
+
+  <!-- Step indicator (chỉ hiện khi 48H đang chạy) -->
+  <div class="step-indicator" id="stepIndicator">
+    <div style="text-align:center">
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+        <div class="step-dot active" id="dot1">1</div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-dot" id="dot2">2</div>
+      </div>
+      <div class="step-label" style="margin-top:6px">Bước <span id="stepText">1</span> / 2</div>
+    </div>
   </div>
 
   <div class="divider"></div>
@@ -302,19 +406,47 @@
 
   <div class="error-box" id="errorBox"></div>
 
+  <!-- Result box (link 1 hoặc link 2) -->
   <div class="result" id="resultBox">
-    <div class="result-label">Link của bạn</div>
+    <div class="result-label" id="resultLabel">Link của bạn</div>
     <div class="result-box">
       <div class="result-url" id="resultUrl"></div>
-      <button class="btn-go" onclick="goLink()">MỞ →</button>
+      <button class="btn-go" id="btnGo" onclick="goLink()">MỞ →</button>
     </div>
   </div>
+
+  <!-- Nút tiếp theo (chỉ hiện sau khi mở link 1 của 48H) -->
+  <button class="btn-next" id="btnNext" onclick="goStep2()">
+    ĐÃ HOÀN THÀNH LINK 1 → TIẾP THEO
+  </button>
 </div>
 
 <script>
   const WORKER_URL = "https://k7m2q9x1a8z4p6.phamlongsoftware.workers.dev";
-  let finalUrl = "";
 
+  let selectedType = 12;   // 12 hoặc 24
+  let finalUrl     = "";
+  let finalUrl2    = "";
+  let currentStep  = 0;    // 0 = chưa bắt đầu, 1 = đang ở link 1, 2 = đang ở link 2
+
+  /* ── Chọn loại key ── */
+  function selectType(h) {
+    selectedType = h;
+    document.getElementById('opt24').className = 'key-option' + (h === 12 ? ' active-24' : '');
+    document.getElementById('opt48').className = 'key-option' + (h === 24 ? ' active-48' : '');
+
+    const btn = document.getElementById('btnGen');
+    if (h === 24) {
+      btn.classList.add('gold-btn');
+    } else {
+      btn.classList.remove('gold-btn');
+    }
+
+    // Reset trạng thái
+    resetFlow();
+  }
+
+  /* ── Generate ── */
   async function handleGenerate() {
     const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
     if (!token) { showError("Vui lòng xác minh CAPTCHA!"); return; }
@@ -324,14 +456,28 @@
     btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span>ĐANG TẠO...';
     hideError();
     document.getElementById('resultBox').classList.remove('show');
+    document.getElementById('btnNext').classList.remove('show');
 
     try {
-      const res  = await fetch(`${WORKER_URL}?token=${encodeURIComponent(token)}`);
-      const data = await res.json();
+      const hours = selectedType; // 12 hoặc 24
+      const res   = await fetch(`${WORKER_URL}?token=${encodeURIComponent(token)}&hours=${hours}`);
+      const data  = await res.json();
       if (!res.ok || !data.url) throw new Error(data.message || "Lỗi server. Thử lại!");
-      finalUrl = data.url;
-      document.getElementById('resultUrl').textContent = finalUrl;
-      document.getElementById('resultBox').classList.add('show');
+
+      finalUrl  = data.url;
+      finalUrl2 = data.url2 || "";
+
+      if (selectedType === 24) {
+        // Bắt đầu flow 2 bước
+        currentStep = 1;
+        showStep(1);
+        showResult("🔗 Link 1 / 2 — Hoàn thành rồi quay lại", finalUrl);
+      } else {
+        // 12H: 1 link bình thường
+        currentStep = 0;
+        hideStepIndicator();
+        showResult("Link của bạn", finalUrl);
+      }
     } catch (e) {
       showError("❌ " + (e.message || "Không thể tạo key. Thử lại!"));
     } finally {
@@ -341,9 +487,81 @@
     }
   }
 
-  function goLink() { if (finalUrl) window.open(finalUrl, '_blank'); }
-  function showError(msg) { const el = document.getElementById('errorBox'); el.textContent = msg; el.classList.add('show'); }
-  function hideError() { document.getElementById('errorBox').classList.remove('show'); }
+  /* ── Mở link ── */
+  function goLink() {
+    if (!finalUrl) return;
+    window.open(finalUrl, '_blank');
+
+    // Nếu đang ở bước 1 của 48H → hiện nút "Tiếp theo"
+    if (selectedType === 24 && currentStep === 1) {
+      document.getElementById('btnNext').classList.add('show');
+    }
+  }
+
+  /* ── Tiếp theo: hiển thị link 2 ── */
+  function goStep2() {
+    document.getElementById('btnNext').classList.remove('show');
+    currentStep = 2;
+    showStep(2);
+
+    if (finalUrl2) {
+      finalUrl = finalUrl2;
+      showResult("🔗 Link 2 / 2 — Hoàn thành để nhận key", finalUrl2);
+    } else {
+      // Fallback: worker chỉ trả 1 URL → dùng lại (trường hợp worker chưa update)
+      showResult("🔗 Link 2 / 2 — Hoàn thành để nhận key", finalUrl);
+    }
+  }
+
+  /* ── Helpers ── */
+  function showResult(label, url) {
+    document.getElementById('resultLabel').textContent = label;
+    document.getElementById('resultUrl').textContent = url;
+    document.getElementById('resultBox').classList.add('show');
+  }
+
+  function showStep(step) {
+    const indicator = document.getElementById('stepIndicator');
+    indicator.classList.add('show');
+    document.getElementById('stepText').textContent = step;
+
+    const dot1  = document.getElementById('dot1');
+    const dot2  = document.getElementById('dot2');
+    const line1 = document.getElementById('line1');
+
+    if (step === 1) {
+      dot1.className  = 'step-dot active';
+      dot2.className  = 'step-dot';
+      line1.className = 'step-line';
+    } else {
+      dot1.className  = 'step-dot done';
+      dot2.className  = 'step-dot active';
+      line1.className = 'step-line done';
+    }
+  }
+
+  function hideStepIndicator() {
+    document.getElementById('stepIndicator').classList.remove('show');
+  }
+
+  function resetFlow() {
+    currentStep = 0;
+    finalUrl    = "";
+    finalUrl2   = "";
+    hideError();
+    hideStepIndicator();
+    document.getElementById('resultBox').classList.remove('show');
+    document.getElementById('btnNext').classList.remove('show');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorBox');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+  function hideError() {
+    document.getElementById('errorBox').classList.remove('show');
+  }
 </script>
 </body>
 </html>
